@@ -7,16 +7,42 @@ import { GameManager } from './gameManager.js';
 
 dotenv.config();
 
+// Configure CORS origins
+const allowedOrigins = [
+  'http://localhost:5173', // Local development
+  'https://dobble-rosy.vercel.app', // Vercel frontend (without trailing slash)
+  'https://dobble-rosy.vercel.app/' // Vercel frontend (with trailing slash)
+];
+
+// Add FRONTEND_URL from environment if it exists
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+  // Also add with trailing slash if it doesn't have one
+  if (!process.env.FRONTEND_URL.endsWith('/')) {
+    allowedOrigins.push(process.env.FRONTEND_URL + '/');
+  }
+  // Also add without trailing slash if it has one
+  if (process.env.FRONTEND_URL.endsWith('/')) {
+    allowedOrigins.push(process.env.FRONTEND_URL.slice(0, -1));
+  }
+}
+
+console.log('Allowed CORS origins:', allowedOrigins);
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    methods: ["GET", "POST"]
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
-app.use(cors());
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
 app.use(express.json());
 
 const gameManager = new GameManager();
