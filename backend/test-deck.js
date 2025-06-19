@@ -18,7 +18,7 @@ console.log(`✅ Deck validation: ${isValid ? 'PASSED' : 'FAILED'}`);
 // Show first few cards
 console.log('\n🃏 First 3 cards:');
 cards.slice(0, 3).forEach((card, index) => {
-  console.log(`Card ${index + 1}: [${card.symbols.map(s => deck.getSymbolEmoji(s)).join(', ')}]`);
+  console.log(`Card ${index + 1}: [${card.symbols.map(s => deck.getSymbolUrl(s)).join(', ')}]`);
 });
 
 // Test symbol matching
@@ -34,7 +34,7 @@ for (let i = 0; i < Math.min(5, cards.length); i++) {
       console.log(`❌ Cards ${i} and ${j} share ${commonSymbols.length} symbols`);
       allPairsValid = false;
     } else {
-      console.log(`✅ Cards ${i} and ${j} share exactly 1 symbol: ${deck.getSymbolEmoji(commonSymbols[0])}`);
+      console.log(`✅ Cards ${i} and ${j} share exactly 1 symbol: ${deck.getSymbolUrl(commonSymbols[0])}`);
     }
   }
 }

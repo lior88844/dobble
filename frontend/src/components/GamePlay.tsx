@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Player, Card } from '../types';
+import { pokemonSymbols } from '../constants/pokemonSymbols';
 
 interface GamePlayProps {
   player: Player | null;
@@ -19,17 +20,6 @@ const GamePlay: React.FC<GamePlayProps> = ({
   onSelectSymbol,
   onNextRound
 }) => {
-  const symbols = [
-    '🦄', '🐱', '🐶', '🐸', '🐼', '🐨', '🐯', '🦁',
-    '🐮', '🐷', '🐸', '🐙', '🦑', '🦐', '🦞', '🦀',
-    '🐡', '🐠', '🐟', '🐬', '🐳', '🐋', '🦈', '🐊',
-    '🐅', '🐆', '🦓', '🦍', '🦧', '🐘', '🦛', '🦏',
-    '🐃', '🐂', '🐄', '🐎', '🐖', '🐏', '🐑', '🐐',
-    '🦌', '🐕', '🐩', '🐈', '🐓', '🦃', '🦚', '🦜',
-    '🦢', '🦩', '🕊️', '🦅', '🦆', '🦉', '🦇', '🐺',
-    '🐗', '🐴', '🦄', '🐝', '🐛', '🦋', '🐌', '🐞'
-  ];
-
   const isHost = player?.isHost;
 
   const handleSymbolClick = (symbolId: number) => {
@@ -103,9 +93,13 @@ const GamePlay: React.FC<GamePlayProps> = ({
                   {centerCard.symbols.map((symbolId, index) => (
                     <motion.div
                       key={index}
-                      className="aspect-square bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center text-4xl border-2 border-transparent"
+                      className="aspect-square bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center border-2 border-transparent"
                     >
-                      {symbols[symbolId] || '❓'}
+                      <img
+                        src={pokemonSymbols[symbolId]}
+                        alt={`pokemon-${symbolId}`}
+                        className="w-12 h-12 object-contain"
+                      />
                     </motion.div>
                   ))}
                 </div>
@@ -128,10 +122,14 @@ const GamePlay: React.FC<GamePlayProps> = ({
                       key={index}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className="aspect-square bg-gradient-to-br from-green-100 to-blue-100 rounded-xl flex items-center justify-center text-4xl cursor-pointer border-2 border-transparent hover:border-green-300 transition-all duration-200"
+                      className="aspect-square bg-gradient-to-br from-green-100 to-blue-100 rounded-xl flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-green-300 transition-all duration-200"
                       onClick={() => handleSymbolClick(symbolId)}
                     >
-                      {symbols[symbolId] || '❓'}
+                      <img
+                        src={pokemonSymbols[symbolId]}
+                        alt={`pokemon-${symbolId}`}
+                        className="w-12 h-12 object-contain"
+                      />
                     </motion.div>
                   ))}
                 </div>
