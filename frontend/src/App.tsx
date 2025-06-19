@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { motion, AnimatePresence } from 'framer-motion';
 import HomeScreen from './components/HomeScreen';
@@ -17,7 +17,6 @@ function App() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [centerCard, setCenterCard] = useState<Card | null>(null);
   const [playerCard, setPlayerCard] = useState<Card | null>(null);
-  const [round, setRound] = useState<number>(0);
   const [message, setMessage] = useState<string>('');
   const [podium, setPodium] = useState<Player[]>([]);
   const [winner, setWinner] = useState<Player | null>(null);
@@ -60,7 +59,6 @@ function App() {
       setCenterCard(data.centerCard);
       setPlayerCard(data.playerCard);
       setPlayers(data.players);
-      setRound(data.round);
       setGameState('playing');
     });
 
@@ -82,7 +80,6 @@ function App() {
     socket.on('roundStarted', (data) => {
       setCenterCard(data.centerCard);
       setPlayerCard(data.playerCard);
-      setRound(data.round);
       setPlayers(data.players);
       setMessage('');
     });
@@ -149,7 +146,6 @@ function App() {
     setPlayers([]);
     setCenterCard(null);
     setPlayerCard(null);
-    setRound(0);
     setMessage('');
   };
 
@@ -191,15 +187,12 @@ function App() {
         {gameState === 'playing' && (
           <GamePlay
             key="playing"
-            roomCode={roomCode}
             player={player}
             players={players}
             centerCard={centerCard}
             playerCard={playerCard}
-            round={round}
             onSelectSymbol={handleSelectSymbol}
             onNextRound={handleNextRound}
-            onBackToHome={handleBackToHome}
           />
         )}
 

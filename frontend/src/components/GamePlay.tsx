@@ -3,27 +3,21 @@ import { motion } from 'framer-motion';
 import { Player, Card } from '../types';
 
 interface GamePlayProps {
-  roomCode: string;
   player: Player | null;
   players: Player[];
   centerCard: Card | null;
   playerCard: Card | null;
-  round: number;
   onSelectSymbol: (symbolId: number) => void;
   onNextRound: () => void;
-  onBackToHome: () => void;
 }
 
 const GamePlay: React.FC<GamePlayProps> = ({
-  roomCode,
   player,
   players,
   centerCard,
   playerCard,
-  round,
   onSelectSymbol,
-  onNextRound,
-  onBackToHome
+  onNextRound
 }) => {
   const symbols = [
     '🦄', '🐱', '🐶', '🐸', '🐼', '🐨', '🐯', '🦁',
