@@ -7,27 +7,10 @@ import { GameManager } from './gameManager.js';
 
 dotenv.config();
 
-// Configure CORS origins
-const allowedOrigins = [
-  'http://localhost:5173', // Local development
-  'http://localhost:5174', // Local development (alt port)
-  'http://localhost:5175', // Local development (alt port)
-];
+// Configure CORS origins - Allow all origins
+const allowedOrigins = '*'; // Allow all origins
 
-// Add FRONTEND_URL from environment if it exists
-if (process.env.FRONTEND_URL) {
-  allowedOrigins.push(process.env.FRONTEND_URL);
-  // Also add with trailing slash if it doesn't have one
-  if (!process.env.FRONTEND_URL.endsWith('/')) {
-    allowedOrigins.push(process.env.FRONTEND_URL + '/');
-  }
-  // Also add without trailing slash if it has one
-  if (process.env.FRONTEND_URL.endsWith('/')) {
-    allowedOrigins.push(process.env.FRONTEND_URL.slice(0, -1));
-  }
-}
-
-console.log('Allowed CORS origins:', allowedOrigins);
+console.log('CORS Policy: Allowing all origins (*)');
 
 const app = express();
 const server = createServer(app);
