@@ -76,11 +76,19 @@ const GameRoom: React.FC<GameRoomProps> = ({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                   className={`flex items-center p-3 rounded-lg ${
-                    p.isHost ? 'bg-yellow-50 border-2 border-yellow-200' : 'bg-gray-50'
+                    p.isHost 
+                      ? 'bg-yellow-50 border-2 border-yellow-200' 
+                      : p.isComputer
+                      ? 'bg-orange-50 border border-orange-200'
+                      : 'bg-gray-50'
                   }`}
                 >
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                    {p.name.charAt(0).toUpperCase()}
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold mr-3 ${
+                    p.isComputer 
+                      ? 'bg-gradient-to-r from-orange-500 to-red-600' 
+                      : 'bg-gradient-to-r from-blue-500 to-purple-600'
+                  }`}>
+                    {p.isComputer ? '🤖' : p.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-gray-800">
@@ -88,6 +96,11 @@ const GameRoom: React.FC<GameRoomProps> = ({
                       {p.isHost && (
                         <span className="ml-2 text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full">
                           Host
+                        </span>
+                      )}
+                      {p.isComputer && (
+                        <span className="ml-2 text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded-full">
+                          AI Player
                         </span>
                       )}
                     </p>

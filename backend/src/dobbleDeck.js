@@ -1,6 +1,18 @@
 export class DobbleDeck {
-  constructor() {
-    this.symbols = [
+  constructor(theme = 'pokemon') {
+    this.theme = theme;
+    this.symbols = this.getSymbolsForTheme(theme);
+  }
+
+  getSymbolsForTheme(theme) {
+    if (theme === 'animals') {
+      // For animals, we just use the index numbers as the symbols
+      // The frontend will map these to emojis
+      return Array.from({ length: 57 }, (_, i) => i);
+    }
+    
+    // Default Pokemon symbols
+    return [
       // User's 19
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png", // Pikachu
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/26.png", // Raichu

@@ -5,7 +5,7 @@ import HomeScreen from './components/HomeScreen';
 import GameRoom from './components/GameRoom';
 import GamePlay from './components/GamePlay';
 import AnimatedPodium from './components/AnimatedPodium';
-import { GameState, Player, Card } from './types';
+import { GameState, Player, Card, GameMode, Theme } from './types';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
@@ -20,6 +20,7 @@ function App() {
   const [message, setMessage] = useState<string>('');
   const [podium, setPodium] = useState<Player[]>([]);
   const [winner, setWinner] = useState<Player | null>(null);
+  const [currentTheme, setCurrentTheme] = useState<Theme>('pokemon');
 
   useEffect(() => {
     const newSocket = io(BACKEND_URL);
@@ -60,6 +61,9 @@ function App() {
       setPlayerCard(data.playerCard);
       setPlayers(data.players);
       setGameState('playing');
+      if (data.theme) {
+        setCurrentTheme(data.theme);
+      }
     });
 
     socket.on('symbolSelected', (data) => {
@@ -82,6 +86,9 @@ function App() {
       setPlayerCard(data.playerCard);
       setPlayers(data.players);
       setMessage('');
+      if (data.theme) {
+        setCurrentTheme(data.theme);
+      }
     });
 
     socket.on('error', (data) => {
@@ -109,15 +116,17 @@ function App() {
     };
   }, [socket]);
 
-  const handleCreateRoom = (playerName: string) => {
+  const handleCreateRoom = (playerName: string, gameMode: GameMode = 'multiplayer', difficulty: string = 'medium', theme: Theme = 'pokemon') => {
     if (socket) {
-      socket.emit('createRoom', { playerName });
+      setCurrentTheme(theme);
+      socket.emit('createRoom', { playerName, gameMode, difficulty, theme });
     }
   };
 
-  const handleJoinRoom = (roomCode: string, playerName: string) => {
+  const handleJoinRoom = (roomCode: string, playerName: string, theme: Theme = 'pokemon') => {
     if (socket) {
-      socket.emit('joinRoom', { roomCode, playerName });
+      setCurrentTheme(theme);
+      socket.emit('joinRoom', { roomCode, playerName, theme });
     }
   };
 
@@ -193,6 +202,7 @@ function App() {
             playerCard={playerCard}
             onSelectSymbol={handleSelectSymbol}
             onNextRound={handleNextRound}
+            theme={currentTheme}
           />
         )}
 

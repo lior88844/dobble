@@ -10,6 +10,8 @@ dotenv.config();
 // Configure CORS origins
 const allowedOrigins = [
   'http://localhost:5173', // Local development
+  'http://localhost:5174', // Local development (alt port)
+  'http://localhost:5175', // Local development (alt port)
   'https://dobble-rosy.vercel.app', // Vercel frontend (without trailing slash)
   'https://dobble-rosy.vercel.app/' // Vercel frontend (with trailing slash)
 ];
@@ -57,7 +59,7 @@ io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
   // Join a game room
-  socket.on('joinRoom', ({ roomCode, playerName }) => {
+  socket.on('joinRoom', ({ roomCode, playerName, theme = 'pokemon' }) => {
     try {
       const result = gameManager.joinRoom(roomCode, socket.id, playerName);
       socket.join(roomCode);
@@ -77,9 +79,9 @@ io.on('connection', (socket) => {
   });
 
   // Create a new game room
-  socket.on('createRoom', ({ playerName }) => {
+  socket.on('createRoom', ({ playerName, gameMode = 'multiplayer', difficulty = 'medium', theme = 'pokemon' }) => {
     try {
-      const result = gameManager.createRoom(socket.id, playerName);
+      const result = gameManager.createRoom(socket.id, playerName, gameMode, difficulty, theme);
       socket.join(result.roomCode);
       socket.emit('roomCreated', result);
     } catch (error) {
@@ -90,17 +92,21 @@ io.on('connection', (socket) => {
   // Start the game
   socket.on('startGame', ({ roomCode }) => {
     try {
-      const result = gameManager.startGame(roomCode);
+      const result = gameManager.startGame(roomCode, io);
       if (result.success) {
         // Send each player their own card and the center card
         const room = gameManager.rooms.get(roomCode);
         room.players.forEach((player) => {
-          io.to(player.id).emit('gameStarted', {
-            centerCard: result.centerCard,
-            playerCard: result.playerCards[player.id],
-            players: result.players,
-            round: result.round
-          });
+          // Only send to human players (computer players don't need socket events)
+          if (!player.isComputer) {
+            io.to(player.id).emit('gameStarted', {
+              centerCard: result.centerCard,
+              playerCard: result.playerCards[player.id],
+              players: result.players,
+              round: result.round,
+              theme: result.theme
+            });
+          }
         });
       } else {
         socket.emit('error', { message: result.message });
@@ -130,16 +136,20 @@ io.on('connection', (socket) => {
         // If correct match, auto-advance to next round after a short delay
         if (result.isMatch) {
           setTimeout(() => {
-            const next = gameManager.nextRound(roomCode);
+            const next = gameManager.nextRound(roomCode, io);
             if (next.success) {
               const room = gameManager.rooms.get(roomCode);
               room.players.forEach((player) => {
-                io.to(player.id).emit('roundStarted', {
-                  centerCard: next.centerCard,
-                  playerCard: next.playerCards[player.id],
-                  players: next.players,
-                  round: next.round
-                });
+                // Only send to human players
+                if (!player.isComputer) {
+                  io.to(player.id).emit('roundStarted', {
+                    centerCard: next.centerCard,
+                    playerCard: next.playerCards[player.id],
+                    players: next.players,
+                    round: next.round,
+                    theme: next.theme
+                  });
+                }
               });
             }
           }, 1200); // 1.2 seconds delay for feedback
@@ -155,16 +165,20 @@ io.on('connection', (socket) => {
   // Next round
   socket.on('nextRound', ({ roomCode }) => {
     try {
-      const result = gameManager.nextRound(roomCode);
+      const result = gameManager.nextRound(roomCode, io);
       if (result.success) {
         const room = gameManager.rooms.get(roomCode);
         room.players.forEach((player) => {
-          io.to(player.id).emit('roundStarted', {
-            centerCard: result.centerCard,
-            playerCard: result.playerCards[player.id],
-            players: result.players,
-            round: result.round
-          });
+          // Only send to human players
+          if (!player.isComputer) {
+            io.to(player.id).emit('roundStarted', {
+              centerCard: result.centerCard,
+              playerCard: result.playerCards[player.id],
+              players: result.players,
+              round: result.round,
+              theme: result.theme
+            });
+          }
         });
       } else {
         socket.emit('error', { message: result.message });

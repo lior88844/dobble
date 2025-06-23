@@ -1,10 +1,13 @@
 export type GameState = 'home' | 'waiting' | 'playing' | 'finished';
+export type GameMode = 'multiplayer' | 'singleplayer';
+export type Theme = 'pokemon' | 'animals';
 
 export interface Player {
   id: string;
   name: string;
   isHost: boolean;
   score: number;
+  isComputer?: boolean;
 }
 
 export interface Card {
@@ -19,6 +22,7 @@ export interface GameData {
   playerCard: Card | null;
   round: number;
   gameState: GameState;
+  theme?: Theme;
 }
 
 export interface SocketEvents {

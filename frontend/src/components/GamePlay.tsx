@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Player, Card } from '../types';
-import { pokemonSymbols } from '../constants/pokemonSymbols';
+import { Player, Card, Theme } from '../types';
+import { getTheme } from '../constants/themes';
 
 interface GamePlayProps {
   player: Player | null;
@@ -10,6 +10,7 @@ interface GamePlayProps {
   playerCard: Card | null;
   onSelectSymbol: (symbolId: number) => void;
   onNextRound: () => void;
+  theme?: Theme;
 }
 
 const GamePlay: React.FC<GamePlayProps> = ({
@@ -18,12 +19,34 @@ const GamePlay: React.FC<GamePlayProps> = ({
   centerCard,
   playerCard,
   onSelectSymbol,
-  onNextRound
+  onNextRound,
+  theme = 'pokemon'
 }) => {
   const isHost = player?.isHost;
+  const currentTheme = getTheme(theme);
 
   const handleSymbolClick = (symbolId: number) => {
     onSelectSymbol(symbolId);
+  };
+
+  const renderSymbol = (symbolId: number, alt: string, className: string) => {
+    const symbolDisplay = currentTheme.getSymbolDisplay(symbolId);
+    
+    if (theme === 'animals') {
+      return (
+        <div className={`${className} flex items-center justify-center text-4xl`}>
+          {symbolDisplay}
+        </div>
+      );
+    } else {
+      return (
+        <img
+          src={symbolDisplay}
+          alt={alt}
+          className={className}
+        />
+      );
+    }
   };
 
   return (
@@ -57,17 +80,27 @@ const GamePlay: React.FC<GamePlayProps> = ({
                       className={`text-center p-3 rounded-lg ${
                         p.id === player?.id
                           ? 'bg-blue-500/20 border-2 border-blue-400'
+                          : p.isComputer
+                          ? 'bg-orange-500/20 border border-orange-400'
                           : 'bg-white/10'
                       }`}
                     >
                       <div className="text-2xl mb-1">
-                        {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '👤'}
+                        {p.isComputer 
+                          ? '🤖' 
+                          : index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '👤'
+                        }
                       </div>
                       <p className="font-semibold text-white text-sm truncate">{p.name}</p>
                       <p className="text-2xl font-bold text-yellow-400">{p.score}</p>
                       {p.isHost && (
                         <span className="text-xs bg-yellow-500 text-yellow-900 px-2 py-1 rounded-full">
                           Host
+                        </span>
+                      )}
+                      {p.isComputer && (
+                        <span className="text-xs bg-orange-500 text-orange-900 px-2 py-1 rounded-full">
+                          AI
                         </span>
                       )}
                     </motion.div>
@@ -95,11 +128,7 @@ const GamePlay: React.FC<GamePlayProps> = ({
                       key={index}
                       className="aspect-square bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center border-2 border-transparent"
                     >
-                      <img
-                        src={pokemonSymbols[symbolId]}
-                        alt={`pokemon-${symbolId}`}
-                        className="w-12 h-12 object-contain"
-                      />
+                      {renderSymbol(symbolId, `${theme}-${symbolId}`, "w-12 h-12 object-contain")}
                     </motion.div>
                   ))}
                 </div>
@@ -125,11 +154,7 @@ const GamePlay: React.FC<GamePlayProps> = ({
                       className="aspect-square bg-gradient-to-br from-green-100 to-blue-100 rounded-xl flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-green-300 transition-all duration-200"
                       onClick={() => handleSymbolClick(symbolId)}
                     >
-                      <img
-                        src={pokemonSymbols[symbolId]}
-                        alt={`pokemon-${symbolId}`}
-                        className="w-12 h-12 object-contain"
-                      />
+                      {renderSymbol(symbolId, `${theme}-${symbolId}`, "w-12 h-12 object-contain")}
                     </motion.div>
                   ))}
                 </div>
