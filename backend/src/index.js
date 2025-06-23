@@ -12,8 +12,6 @@ const allowedOrigins = [
   'http://localhost:5173', // Local development
   'http://localhost:5174', // Local development (alt port)
   'http://localhost:5175', // Local development (alt port)
-  'https://dobble-rosy.vercel.app', // Vercel frontend (without trailing slash)
-  'https://dobble-rosy.vercel.app/' // Vercel frontend (with trailing slash)
 ];
 
 // Add FRONTEND_URL from environment if it exists
